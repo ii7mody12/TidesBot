@@ -24,7 +24,7 @@ def load_opus_lib(opus_libs=OPUS_LIBS):
             return
         except OSError:
             pass
-	raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(opus_libs)))
+raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(opus_libs)))
 
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
 MyBot = commands.Bot(command_prefix='!')
