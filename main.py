@@ -3,6 +3,7 @@ from discord.ext import commands
 import logging
 import random
 import asyncio
+import time
 import os, os.path
 import requests
 import json
@@ -82,4 +83,4 @@ async def tCategories():
 #async def on_message(message):
 # 	print(message.content)
 
-MyBot.run(TOKEN)
+MyBot.run(os.getenv('TOKEN'))
