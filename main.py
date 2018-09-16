@@ -8,6 +8,7 @@ import time
 import os, os.path
 import requests
 import json
+import youtube_dl
 
 startup_extensions = ["Music"]
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
@@ -82,6 +83,8 @@ async def tCategories():
 	await MyBot.say('Here are all the categories: \n `' + categ + '`')
 
 # MUSIC #
+players = {}
+
 @MyBot.command(pass_context=True)
 async def join(ctx):
 	channel = ctx.message.author.voice.voice_channel
@@ -92,6 +95,15 @@ async def leave(ctx):
 	for x in MyBot.voice_clients:
 		if(x.server == ctx.message.server):
 			return await x.disconnect()
+
+@MyBot.command(pass_context=True)
+async def play(ctx, url):
+	server = ctx.message.server
+	voice_client = MyBot.voice_client_in(server)
+	player = await voice_client.create_ytdl_player(url)
+	players[server.id] = player
+	player.start()
+
 
 # RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
