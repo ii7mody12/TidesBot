@@ -1,7 +1,6 @@
 discord.py[voice]
 requests
 youtube_dl
-pynacl
 pip
 colorlog
 cffi --only-binary all; 
@@ -9,3 +8,11 @@ aiohttp ~= 2.3.10
 websockets
 chardet
 opuslib
+pytz
+memory_profiler
+imgurpython
+aiohttp
+PyNaCl
+cffi
+pycparser
+mcstatus
