@@ -10,10 +10,9 @@ import requests
 import json
 import youtube_dl
 
-startup_extensions = ["Music"]
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
-#client = discord.Client(command_prefix='!')
-MyBot = commands.Bot(command_prefix='!', description='Hi!')
+MyBot = commands.Bot(command_prefix='!')
+discord.opus.load_opus('opus')
 
 #Logs info to a discord.log file
 logger = logging.getLogger('discord')
