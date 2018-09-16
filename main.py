@@ -10,6 +10,7 @@ import os, os.path
 import requests
 import json
 import youtube_dl
+from pprint import pprint
 
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
 MyBot = commands.Bot(command_prefix='!')
@@ -21,9 +22,12 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-# TRIVIA VARIABLES #
+# VARIABLES #
 openTriviaDB_SessionToken = ''
+token = ''
 
+with open('token.json') as f:
+    token = json.load(f)["Token"]
 
 @MyBot.event
 async def on_ready():  
@@ -116,4 +120,4 @@ async def resume(ctx):
 	players[id].resume()
 
 # RUN BOT #
-MyBot.run(os.getenv('TOKEN'))
+MyBot.run(token)
