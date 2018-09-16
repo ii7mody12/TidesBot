@@ -85,7 +85,7 @@ async def tCategories():
 @MyBot.command(pass_context=True)
 async def join(ctx):
 	channel = ctx.message.author.voice.voice_channel
-	await client.join_voice_channel(channel)
+	await MyBot.join_voice_channel(channel)
 
 @MyBot.command(pass_context=True)
 async def leave(ctx):
