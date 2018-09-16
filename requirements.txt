@@ -1,4 +1,4 @@
-discord.py[voice]
+-U discord.py[voice]
 requests
 youtube_dl
 pynacl
