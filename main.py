@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.voice_client import VoiceClient
 import logging
 import random
 import asyncio
@@ -8,6 +9,7 @@ import os, os.path
 import requests
 import json
 
+startup_extensions = ["Music"]
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
 #client = discord.Client(command_prefix='!')
 MyBot = commands.Bot(command_prefix='!', description='Hi!')
@@ -79,8 +81,19 @@ async def tCategories():
 
 	await MyBot.say('Here are all the categories: \n `' + categ + '`')
 
-#@MyBot.event
-#async def on_message(message):
-# 	print(message.content)
+# MUSIC #
+@MyBot.command(pass_context=True)
+async def join(ctx):
+	channel = ctx.message.author.voice.voice_channel
+	await client.join_voice_channel(channel)
 
+@MyBot.command(pass_context=True)
+async def leave(ctx):
+	server = ctx.message.server
+	voice_client = VoiceClient.voice_client_in(server)
+	await voice_client.disconnect()
+
+
+
+# RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
