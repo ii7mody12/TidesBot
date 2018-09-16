@@ -89,11 +89,9 @@ async def join(ctx):
 
 @MyBot.command(pass_context=True)
 async def leave(ctx):
-	server = ctx.message.server
-	voice_client = MyBot.voice_client_in(server)
-	await voice_client.disconnect()
-
-
+	for x in MyBot.voice_clients:
+		if(x.server == ctx.message.server):
+			return await x.disconnect()
 
 # RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
