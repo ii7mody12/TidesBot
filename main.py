@@ -12,7 +12,6 @@ import youtube_dl
 
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
 MyBot = commands.Bot(command_prefix='!')
-discord.opus.load_opus('opus')
 
 #Logs info to a discord.log file
 logger = logging.getLogger('discord')
@@ -103,6 +102,8 @@ async def play(ctx, url):
 	players[server.id] = player
 	player.start()
 
+if not discord.opus.is_loaded:
+	discord.opus.load_opus('opus')
 
 # RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
