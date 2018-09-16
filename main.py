@@ -21,9 +21,6 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-# VARIABLES #
-TOKEN = 'YOURTOKENHERE'
-
 # TRIVIA VARIABLES #
 openTriviaDB_SessionToken = ''
 
@@ -94,6 +91,29 @@ async def leave(ctx):
 	server = ctx.message.server
 	voice_client = MyBot.voice_client_in(server)
 	await voice_client.disconnect()
+
+@MyBot.command(pass_context=True)
+async def play(ctx, url):
+	server = ctx.message.server
+	voice_client = MyBot.voice_client_in(server)
+	player = await voice_client.create_ytdl_player(url)
+	players[server.id] = player
+	player.start()
+
+@MyBot.command(pass_context=True)
+async def stop(ctx):
+	id = ctx.message.server.id
+	players[id].stop()
+
+@MyBot.command(pass_context=True)
+async def pause(ctx):
+	id = ctx.message.server.id
+	players[id].pause()
+
+@MyBot.command(pass_context=True)
+async def resume(ctx):
+	id = ctx.message.server.id
+	players[id].resume()
 
 # RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
