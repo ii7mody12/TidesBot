@@ -9,3 +9,5 @@ aiohttp ~= 2.3.10
 websockets
 chardet
 opuslib
+libffi
+libnacl
