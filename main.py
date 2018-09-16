@@ -90,7 +90,7 @@ async def join(ctx):
 @MyBot.command(pass_context=True)
 async def leave(ctx):
 	server = ctx.message.server
-	voice_client = VoiceClient.voice_client_in(server)
+	voice_client = MyBot.voice_client_in(server)
 	await voice_client.disconnect()
 
 
