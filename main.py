@@ -11,21 +11,6 @@ import requests
 import json
 import youtube_dl
 
-# OPUS #
-OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
-
-def load_opus_lib(opus_libs=OPUS_LIBS):
-    if opus.is_loaded():
-        return True
-
-    for opus_lib in opus_libs:
-        try:
-            opus.load_opus(opus_lib)
-            return
-        except OSError:
-            pass
-raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(OPUS_LIBS)))
-
 #Represents a client connection that connects to Discord. Used to interact with the Discord WebSocket and API.
 MyBot = commands.Bot(command_prefix='!')
 
@@ -106,17 +91,9 @@ async def join(ctx):
 
 @MyBot.command(pass_context=True)
 async def leave(ctx):
-	for x in MyBot.voice_clients:
-		if(x.server == ctx.message.server):
-			return await x.disconnect()
-
-@MyBot.command(pass_context=True)
-async def play(ctx, url):
 	server = ctx.message.server
 	voice_client = MyBot.voice_client_in(server)
-	player = await voice_client.create_ytdl_player(url)
-	players[server.id] = player
-	player.start()
+	await voice_client.disconnect()
 
 # RUN BOT #
 MyBot.run(os.getenv('TOKEN'))
