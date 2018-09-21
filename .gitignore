@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 token.txt
 token.json
+twitchAlertInfo.json
+RoleDef.json
+twitch.cfg

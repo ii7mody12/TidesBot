@@ -11,7 +11,7 @@ Once you do that, create a token.json file that looks like this:
 ```
 
 ## Commands
-**!info:** List all the commands.  
+**!help:** List all the commands.  
 **!purge:** Delete a set amount of messages.  
 **!tCategories:** List all the trivia categories.  
 **!join:** Join the voice channel.  
