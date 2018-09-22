@@ -12,7 +12,7 @@ class TwitchAlert:
     def __init__(self, client):
         # Grab Token
         self.twitchClientID = ''
-        with open('token.json', "a+") as f:
+        with open('token.json') as f:
             js = json.load(f)
             self.twitchClientID = js["Client_ID"]
         # Variables
@@ -21,8 +21,10 @@ class TwitchAlert:
         self.tAlertInfo = {}
         self.tAlertSessionInfo = {}
         self.currentCheckChannel = None
-        with open('twitchAlertInfo.json', "a+") as f:
+        with open('twitchAlertInfo.json') as f:
             self.tAlertInfo = json.load(f)
+        with open("twitchSessionInfo.json") as g:
+            self.tAlertSessionInfo = json.load(g)
 
     async def getstreams(self):
         for guild in self.client.guilds:
@@ -30,6 +32,7 @@ class TwitchAlert:
             if(guild.name in self.tAlertInfo):
                 #Get all twitch channels we should report for
                 for channel in self.tAlertInfo[guild.name]["Channels"]:
+                    # Make sure alert session exist for this guild
                     if not(guild.name in self.tAlertSessionInfo):
                             self.tAlertSessionInfo[guild.name] = []
                     await self.looptwitchstatus(guild, self.tClient.channels.get_by_id(channel).name)
@@ -44,9 +47,10 @@ class TwitchAlert:
             await ctx.message.channel.send("Sorry, you don't have permission to do that.")
             return
 
-        self.tAlertInfo[ctx.message.guild.name]["TextChannel"] = textChannel.name
+        self.tAlertInfo[ctx.message.guild.name]["TextChannel"] = int(str(textChannel).replace("<", "").replace(">", "").replace("#", "").strip())
         group = self.tAlertInfo[ctx.message.guild.name]
         await ctx.message.channel.send("Alerts will now happen in {}.".format(textChannel), delete_after=5)
+        await ctx.message.delete()
         self.saveToFile()
 
     # Add twitch to update list #
@@ -77,7 +81,8 @@ class TwitchAlert:
             if str(msg.content).lower() == "yes":
                 await ctx.message.channel.send('Ok! Adding to list.'.format(msg), delete_after=5)
                 group.append(channels[0].id)
-                self.tAlertInfo[ctx.message.guild.name]["TextChannel"] = m.channel.name
+                if not("TextChannel" in self.tAlertInfo[ctx.message.guild.name]):
+                    self.tAlertInfo[ctx.message.guild.name]["TextChannel"] = ctx.message.channel.name
             else:
                 await ctx.message.channel.send('Ignoring call.', delete_after=5)
             await msg.delete()
@@ -111,10 +116,9 @@ class TwitchAlert:
             user = [self.currentCheckChannel]
 
         res = self.tClient.streams.get_stream_by_user(user[0].id)
-        print(res)
+
         if bool(res):
             if Msg:
-                print(res)
                 await ctx.message.channel.send('{} is live! {}'.format(twitchChannel, res.channel.url))
             await ctx.message.delete()
             return True
@@ -130,21 +134,23 @@ class TwitchAlert:
 
         res = self.tClient.streams.get_stream_by_user(user[0].id)
         wantedChannel = self.tAlertInfo[guild.name]["TextChannel"]
-        guildChannel = guild.channels[0]
-
-        if wantedChannel:
-            guildChannel = discord.utils.get(self.client.get_all_channels(), guild__name=guild.name, name=wantedChannel)
+        guildChannel = guild.get_channel(int(wantedChannel))
 
         if bool(res):
-            if not(res["created_at"] in  self.tAlertSessionInfo[guild.name]):
-                self.tAlertSessionInfo[guild.name].append(res["created_at"])
-                await guild.channels[0].send('{} is live! {}'.format(twitchChannel, res.channel.url))
+            if not(res["created_at"].second in  self.tAlertSessionInfo[guild.name]):
+                await guildChannel.send('{} is live! {}'.format(twitchChannel, res.channel.url))
+                self.tAlertSessionInfo[guild.name].append(res["created_at"].second)
                 return True
+        self.saveSessionInfo()
 
     # Save twitchAlert data to file #
     def saveToFile(self):
         with open('twitchAlertInfo.json', 'w') as outfile:  
             json.dump(self.tAlertInfo, outfile)
+
+    def saveSessionInfo(self):
+        with open('twitchSessionInfo.json', 'w') as outfile:  
+            json.dump(self.tAlertSessionInfo, outfile)
 
 def setup(client):
     client.add_cog(TwitchAlert(client))

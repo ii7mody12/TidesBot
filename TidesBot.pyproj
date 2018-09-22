@@ -27,6 +27,7 @@
     <Compile Include="music.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pokedex.py" />
     <Compile Include="rewriteMusic.py">
       <SubType>Code</SubType>
     </Compile>
@@ -42,6 +43,15 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="data\pokedex\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\pokedex\Items.csv" />
+    <Content Include="data\pokedex\Moves.csv" />
+    <Content Include="data\pokedex\Pokemon.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
