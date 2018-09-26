@@ -7,6 +7,7 @@ import json
 from twitch import TwitchClient
 import sched, time
 import asyncio
+from datetime import datetime
 
 class TwitchAlert:
     def __init__(self, client):
@@ -117,14 +118,17 @@ class TwitchAlert:
 
         res = self.tClient.streams.get_stream_by_user(user[0].id)
 
+        embed = discord.Embed(colour = discord.Colour.blue())
+
+        await ctx.trigger_typing()
         if bool(res):
             if Msg:
-                await ctx.message.channel.send('{} is live! {}'.format(twitchChannel, res.channel.url))
+                await self.PrintLiveStatus(res, ctx.message.channel)
             await ctx.message.delete()
             return True
         else:
             if Msg:
-                await ctx.message.channel.send('{} is offline!'.format(twitchChannel), delete_after=10)
+                await ctx.message.channel.send('https://www.twitch.tv/{} is offline!'.format(twitchChannel), delete_after=20)
             await ctx.message.delete()
             return False
 
@@ -138,10 +142,28 @@ class TwitchAlert:
 
         if bool(res):
             if not(res["created_at"].second in  self.tAlertSessionInfo[guild.name]):
-                await guildChannel.send('{} is live! {}'.format(twitchChannel, res.channel.url))
+                await guildChannel.trigger_typing()
+                await self.PrintLiveStatus(res, guildChannel)
                 self.tAlertSessionInfo[guild.name].append(res["created_at"].second)
                 return True
         self.saveSessionInfo()
+
+    async def PrintLiveStatus(self, user, guildChannel):
+        embed = discord.Embed(colour = discord.Colour.blue())
+        hoursAgo = datetime.utcnow()-user.created_at
+
+        embed.set_author(name="{} is live!".format(user.channel["name"]), icon_url="{}".format(user.channel["logo"]))
+        embed.set_thumbnail(url="{}".format(user.preview["medium"]))
+        embed.set_image(url="{}".format(user.preview["large"]))
+        # Info
+        embed.add_field(name="{}".format(user.channel["display_name"]), value="[{}](https://www.twitch.tv/{})".format(user.channel["status"], user.channel["name"]), inline=False)
+        embed.add_field(name="Current Viewers:", value="{}".format(user.viewers), inline=False)
+        if hoursAgo.seconds >= 3600:
+            embed.add_field(name="Up For:", value="{} hours".format(hoursAgo.seconds//3600), inline=False)
+        else:
+            embed.add_field(name="Up For:", value="{} minutes".format(hoursAgo.seconds//60), inline=False)
+        embed.set_footer(text="Playing: {}".format(user.game))
+        await guildChannel.send(embed=embed)
 
     # Save twitchAlert data to file #
     def saveToFile(self):

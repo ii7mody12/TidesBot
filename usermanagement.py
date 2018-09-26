@@ -22,14 +22,12 @@ class UserManagement:
             username = ctx.message.mentions[0].name
         else:
             username = str(ctx.message.content).replace("!userinfo ", "").strip()
-        print(username)
 
         wt = discord.utils.get(user.guild.members, name=username)
         embed = discord.Embed(
 	        colour = wt.roles[0].colour
         )
 
-        print(wt)
         daysAgo = datetime.utcnow()-wt.created_at
         daysAgoServer = datetime.utcnow()-wt.joined_at
 
@@ -106,8 +104,14 @@ class UserManagement:
                 await role.edit(colour=discord.Colour(new_int), permissions=roleE.permissions)
                 await user.add_roles(role)
             else:
-                await ctx.message.guild.create_role(name=str(ctx.message.author)+"ColorMe", colour=discord.Colour(new_int))
+                print(user.roles)
+                role = await ctx.message.guild.create_role(name=str(ctx.message.author)+"ColorMe", colour=discord.Colour(new_int))
+                if len(user.roles) > 1:
+                    await role.edit(position=int(user.roles[1].position+1))
+                else:
+                    await role.edit(position=int(user.roles[0].position+1))
                 await user.add_roles(role)
+            await ctx.message.channel.send("Applied color {} to {}.".format(colorCode, user.name), delete_after=5)
         except:
             await ctx.message.channel.send("Sorry. I either don't have permission, or that is not a proper color.")
 
